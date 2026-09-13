@@ -1,6 +1,7 @@
 // main.rs
 mod cli;
 mod g4;
+mod scorer;
 mod seq;
 
 use clap::Parser;
