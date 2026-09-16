@@ -2,9 +2,11 @@
 
 use std::cmp;
 
-pub fn g4hunter_scorer(nucl_byte_slice: &[u8]) -> f64 {
+pub fn g4hunter_scorer(nucl_byte_slice: &[u8]) -> (f64, usize) {
+    // Score a nucleotide slice based on g4hunter scores.
+    // Returns a tuple (g4hunter score as a float, scaled g4hunter score (0,1000) for BED files)
     if nucl_byte_slice.is_empty() {
-        return 0.0;
+        return (0.0, 0);
     }
     let mut score: i32 = 0;
     let chunks = nucl_byte_slice.chunk_by(|a, b| a.eq_ignore_ascii_case(b));
@@ -21,8 +23,18 @@ pub fn g4hunter_scorer(nucl_byte_slice: &[u8]) -> f64 {
         };
         score += current_score
     }
+
+    let scaled_score: usize;
     let length: f64 = nucl_byte_slice.len() as f64;
-    score as f64 / length
+    let float_score: f64 = score as f64 / length;
+
+    if float_score.abs() as usize <= 4 {
+        scaled_score = (float_score.abs() * 250.0).trunc() as usize;
+    } else {
+        scaled_score = 1000;
+    }
+
+    (float_score, scaled_score)
 }
 
 #[cfg(test)]
@@ -31,17 +43,20 @@ mod tests {
 
     #[test]
     fn test_g4hunter_scorer() {
-        assert_eq!(g4hunter_scorer(b"CAATCGGATCGAATTCGATCCGATTGAAAAAAA"), 0.0);
-        assert_eq!(g4hunter_scorer(b"GGGTTAGGG"), 2.0);
-        assert_eq!(g4hunter_scorer(b""), 0.0);
+        assert_eq!(
+            g4hunter_scorer(b"CAATCGGATCGAATTCGATCCGATTGAAAAAAA"),
+            (0.0, 0)
+        );
+        assert_eq!(g4hunter_scorer(b"GGGTTAGGG"), (2.0, 500));
+        assert_eq!(g4hunter_scorer(b""), (0.0, 0));
         assert_eq!(
             g4hunter_scorer(b"GGGTTAGGGTTAGGGTTAGGG"),
-            1.7142857142857142
+            (1.7142857142857142, 428)
         );
         assert_eq!(
             g4hunter_scorer(b"CCCTTACCCTTACCCTTACCC"),
-            -1.7142857142857142
+            (-1.7142857142857142, 428)
         );
-        assert_eq!(g4hunter_scorer(b"GGGAGGGAGGGAGGG"), 2.4);
+        assert_eq!(g4hunter_scorer(b"GGGAGGGAGGGAGGG"), (2.4, 600));
     }
 }

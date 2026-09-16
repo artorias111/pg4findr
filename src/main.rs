@@ -8,6 +8,7 @@ use clap::Parser;
 
 use cli::Args;
 use g4::{Patterns, find_in_record};
+use scorer::g4hunter_scorer;
 
 fn main() {
     let args = Args::parse();
@@ -31,15 +32,24 @@ fn main() {
                 }
             };
 
+            // naming
+            let mut index: usize = 1; // unique name, starting from 1, and increases by 1 for every G4 entry
+
             for m in find_in_record(&record.id, &record.seq, &pats) {
+                let scoring_slice = &record.seq[m.start..m.end];
+                let (g4_hunter_score, scaled_g4_hunter_score) =
+                    g4hunter_scorer(scoring_slice.as_bytes());
                 println!(
-                    "{}\t{}\t{}\tG4\t{}\t{}",
-                    m.seq_id,
-                    m.start,
-                    m.end,
-                    m.span(),
-                    m.strand
+                    "{}\t{}\t{}\tpg4findr_G4_{}\t{}\t{}\t{}",
+                    m.seq_id,               // column 1
+                    m.start,                // column 2
+                    m.end,                  // column 3
+                    index,                  // column 4
+                    scaled_g4_hunter_score, // column 5
+                    m.strand,               // column 6
+                    g4_hunter_score         // column 7
                 );
+                index += 1;
             }
         }
     }
