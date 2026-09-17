@@ -6,8 +6,9 @@ Find G-quadruplex motifs in sequencing reads/genome assemblies. Input is expecte
 
 The output is a bed file with the columns sequence_id, start, end, name, bed format score, strand, raw score. Default output is to stdout. See [the BED format specifications](https://github.com/samtools/hts-specs/blob/master/BEDv1.pdf) for more information on the BED file format.
 
+The sequences are filtered via a regular expression explained in [https://doi.org/10.1093/nar/gki609](https://doi.org/10.1093/nar/gki609) with Rust Regex's `find_iter()` (https://docs.rs/regex/latest/regex/struct.Regex.html#method.find_iter) to avoid overlaps and repeating counts. 
 
-The sequences are found via a regular expression explained in [https://doi.org/10.1093/nar/gki609](https://doi.org/10.1093/nar/gki609) with Rust Regex's `find_iter()` (https://docs.rs/regex/latest/regex/struct.Regex.html#method.find_iter) to avoid overlaps and repeating counts. 
+You can also add a filter to the scores with the `--min-score <[0.0,4.0]>` flag (default filter is `--min-score 1.0`)
 
 ### Usage
 ```shell

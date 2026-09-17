@@ -36,6 +36,10 @@ pub fn g4hunter_scorer(nucl_byte_slice: &[u8]) -> (f64, usize) {
     (float_score, scaled_score)
 }
 
+pub fn filter_g4score(score: f64, filter: f64) -> bool {
+    score.abs() >= filter
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -57,5 +61,13 @@ mod tests {
             (-1.7142857142857142, 428)
         );
         assert_eq!(g4hunter_scorer(b"GGGAGGGAGGGAGGG"), (2.4, 600));
+    }
+
+    #[test]
+    fn test_g4score_filter() {
+        assert!(filter_g4score(-1.714, 1.0));
+        assert!(!filter_g4score(0.5, 1.0));
+        assert!(filter_g4score(-2.4, 0.0));
+        assert!(filter_g4score(1.0, 1.0));
     }
 }
