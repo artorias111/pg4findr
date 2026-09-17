@@ -65,9 +65,9 @@ mod tests {
 
     #[test]
     fn test_g4score_filter() {
-        assert_eq!(filter_g4score(-1.714, 1.0), true);
-        assert_eq!(filter_g4score(0.5, 1.0), false);
-        assert_eq!(filter_g4score(-2.4, 0.0), true);
-        assert_eq!(filter_g4score(1.0, 1.0), true);
+        assert!(filter_g4score(-1.714, 1.0));
+        assert!(!filter_g4score(0.5, 1.0));
+        assert!(filter_g4score(-2.4, 0.0));
+        assert!(filter_g4score(1.0, 1.0));
     }
 }

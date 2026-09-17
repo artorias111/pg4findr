@@ -8,7 +8,7 @@ The output is a bed file with the columns sequence_id, start, end, name, bed for
 
 The sequences are filtered via a regular expression explained in [https://doi.org/10.1093/nar/gki609](https://doi.org/10.1093/nar/gki609) with Rust Regex's `find_iter()` (https://docs.rs/regex/latest/regex/struct.Regex.html#method.find_iter) to avoid overlaps and repeating counts. 
 
-You can also add a filter to the scores with the `--min_score <[0.0,4.0]>` flag (default filter is `--min_score 1.0`)
+You can also add a filter to the scores with the `--min-score <[0.0,4.0]>` flag (default filter is `--min-score 1.0`)
 
 ### Usage
 ```shell
