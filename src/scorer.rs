@@ -13,26 +13,25 @@ pub fn g4hunter_scorer(nucl_byte_slice: &[u8]) -> (f64, usize) {
     for nucl_runs in chunks {
         let size: i32 = nucl_runs.len().try_into().unwrap();
         let current_score: i32 = match nucl_runs.first() {
-            Some(65) => 0,                             // A
-            Some(84) => 0,                             // T
-            Some(71) => cmp::min(size, 4) * size,      // G
-            Some(67) => cmp::min(size, 4) * size * -1, // C
-            Some(103) => cmp::min(size, 4) * size,     // lowercase g
-            Some(99) => cmp::min(size, 4) * size * -1, // lowercase c
+            Some(65) => 0,                           // A
+            Some(84) => 0,                           // T
+            Some(71) => cmp::min(size, 4) * size,    // G
+            Some(67) => -(cmp::min(size, 4) * size), // C
+            Some(103) => cmp::min(size, 4) * size,   // lowercase g
+            Some(99) => -(cmp::min(size, 4) * size), // lowercase c
             _ => 0,
         };
         score += current_score
     }
 
-    let scaled_score: usize;
     let length: f64 = nucl_byte_slice.len() as f64;
     let float_score: f64 = score as f64 / length;
 
-    if float_score.abs() as usize <= 4 {
-        scaled_score = (float_score.abs() * 250.0).trunc() as usize;
+    let scaled_score: usize = if float_score.abs() as usize <= 4 {
+        (float_score.abs() * 250.0).trunc() as usize
     } else {
-        scaled_score = 1000;
-    }
+        1000
+    };
 
     (float_score, scaled_score)
 }

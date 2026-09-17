@@ -32,6 +32,7 @@ pub struct PG4Match {
 
 impl PG4Match {
     /// Number of bases the match covers.
+    #[allow(dead_code)]
     pub fn span(&self) -> usize {
         self.end - self.start
     }
